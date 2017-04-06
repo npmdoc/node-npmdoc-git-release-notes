@@ -1,0 +1,156 @@
+<html><head></head><body><div class="apidocDiv">
+<style>
+/*csslint
+*/
+.apidocDiv {
+    background: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+.apidocDiv a[href] {
+    color: #33f;
+    font-weight: bold;
+    text-decoration: none;
+}
+.apidocDiv a[href]:hover {
+    text-decoration: underline;
+}
+.apidocCodeCommentSpan {
+    background: #bbf;
+    color: #000;
+    display: block;
+}
+.apidocCodeKeywordSpan {
+    color: #d00;
+    font-weight: bold;
+}
+.apidocCodePre {
+    background: #eef;
+    border: 1px solid;
+    color: #777;
+    padding: 5px;
+    white-space: pre-wrap;
+}
+.apidocFooterDiv {
+    margin-top: 20px;
+    text-align: center;
+}
+.apidocModuleLi {
+    margin-top: 10px;
+}
+.apidocSectionDiv {
+    border-top: 1px solid;
+    margin-top: 20px;
+}
+.apidocSignatureSpan {
+    color: #777;
+    font-weight: bold;
+}
+</style>
+<h1>api documentation for
+    <a href="https://github.com/ariatemplates/git-release-notes">git-release-notes (v1.0.0)</a>
+</h1>
+<h4>Generate beautiful release notes from a git log.</h4>
+<div class="apidocSectionDiv"><a href="#apidoc.tableOfContents" id="apidoc.tableOfContents"><h1>table of contents</h1></a><ol>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.git-release-notes">module git-release-notes</a><ol>
+
+        <li>
+
+            <span class="apidocSignatureSpan">object <span class="apidocSignatureSpan">git-release-notes.</span>git</span>
+
+        </li>
+
+    </ol></li>
+
+    <li class="apidocModuleLi"><a href="#apidoc.module.git-release-notes.git">module git-release-notes.git</a><ol>
+
+        <li>
+
+            <a class="apidocElementLiA" href="#apidoc.element.git-release-notes.git.log">
+            function <span class="apidocSignatureSpan">git-release-notes.git.</span>log
+            <span class="apidocSignatureSpan">(options, callback)</span>
+            </a>
+
+        </li>
+
+    </ol></li>
+
+</ol></div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.git-release-notes" id="apidoc.module.git-release-notes">module git-release-notes</a></h1>
+
+
+
+</div>
+
+<div class="apidocSectionDiv">
+<h1><a href="#apidoc.module.git-release-notes.git" id="apidoc.module.git-release-notes.git">module git-release-notes.git</a></h1>
+
+
+    <h2>
+        <a href="#apidoc.element.git-release-notes.git.log" id="apidoc.element.git-release-notes.git.log">
+        function <span class="apidocSignatureSpan">git-release-notes.git.</span>log
+        <span class="apidocSignatureSpan">(options, callback)</span>
+        </a>
+    </h2>
+    <ul>
+    <li>description and source-code<pre class="apidocCodePre">log = function (options, callback) {
+	var spawn = require("child_process").spawn;
+	var gitArgs = ["log", "--no-color", "--no-merges", "--branches=" + options.branch, "--format=" + formatOptions, options.range];
+	debug("Spawning git with args %o", gitArgs);
+	var gitLog = spawn("git", gitArgs, {
+		cwd : options.cwd,
+		stdio : ["ignore", "pipe", process.stderr]
+	});
+
+	var allCommits = "";
+	gitLog.stdout.on("data", function (data) {
+		allCommits += data;
+	});
+
+	gitLog.on("exit", function (code) {
+		debug("Git command exited with code '%d'", code);
+		if (code === 0) {
+			allCommits = normalizeNewlines(allCommits).trim();
+
+			if (allCommits) {
+				// Build the list of commits from git log
+				var commits = processCommits(allCommits, options);
+				callback(commits);
+			} else {
+				callback([]);
+			}
+		}
+	});
+}</pre></li>
+    <li>example usage<pre class="apidocCodePre">...
+	if (err) {
+		require("optimist").showHelp();
+		console.error("\nUnable to locate template file " + argv._[1]);
+		process.exit(5);
+	} else {
+		getOptions(function (options) {
+			debug("Running git log in '%s' on branch '%s' with range '%s'", options.p, options.b,
+argv._[0]);
+			git.<span class="apidocCodeKeywordSpan">log</span>({
+				branch : options.b,
+				range : argv._[0],
+				title : new RegExp(options.t),
+				meaning : Array.isArray(options.m) ? options.m : [options.m],
+				cwd : options.p
+			}, function (commits) {
+				debug("Got %d commits", commits.length);
+...</pre></li>
+    </ul>
+
+
+</div>
+
+<div class="apidocFooterDiv">
+    [ this document was created with
+    <a href="https://github.com/kaizhu256/node-utility2" target="_blank">utility2</a>
+    ]
+</div>
+</div>
+</body></html>
