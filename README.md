@@ -1,9 +1,14 @@
-# api documentation for  [git-release-notes (v1.0.0)](https://github.com/ariatemplates/git-release-notes)  [![npm package](https://img.shields.io/npm/v/npmdoc-git-release-notes.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-git-release-notes) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-git-release-notes.svg)](https://travis-ci.org/npmdoc/node-npmdoc-git-release-notes)
+# npmdoc-git-release-notes
+
+#### api documentation for  [git-release-notes (v1.0.0)](https://github.com/ariatemplates/git-release-notes)  [![npm package](https://img.shields.io/npm/v/npmdoc-git-release-notes.svg?style=flat-square)](https://www.npmjs.org/package/npmdoc-git-release-notes) [![travis-ci.org build-status](https://api.travis-ci.org/npmdoc/node-npmdoc-git-release-notes.svg)](https://travis-ci.org/npmdoc/node-npmdoc-git-release-notes)
+
 #### Generate beautiful release notes from a git log.
 
-[![NPM](https://nodei.co/npm/git-release-notes.png?downloads=true)](https://www.npmjs.com/package/git-release-notes)
+[![NPM](https://nodei.co/npm/git-release-notes.png?downloads=true&downloadRank=true&stars=true)](https://www.npmjs.com/package/git-release-notes)
 
-[![apidoc](https://npmdoc.github.io/node-npmdoc-git-release-notes/build/screenCapture.buildNpmdoc.browser._2Fhome_2Ftravis_2Fbuild_2Fnpmdoc_2Fnode-npmdoc-git-release-notes_2Ftmp_2Fbuild_2Fapidoc.html.png)](https://npmdoc.github.io/node-npmdoc-git-release-notes/build/apidoc.html)
+- [https://npmdoc.github.io/node-npmdoc-git-release-notes/build/apidoc.html](https://npmdoc.github.io/node-npmdoc-git-release-notes/build/apidoc.html)
+
+[![apidoc](https://npmdoc.github.io/node-npmdoc-git-release-notes/build/screenCapture.buildCi.browser.%252Ftmp%252Fbuild%252Fapidoc.html.png)](https://npmdoc.github.io/node-npmdoc-git-release-notes/build/apidoc.html)
 
 ![npmPackageListing](https://npmdoc.github.io/node-npmdoc-git-release-notes/build/screenCapture.npmPackageListing.svg)
 
@@ -18,7 +23,6 @@
 {
     "author": {
         "name": "ariatemplates",
-        "email": "contact@ariatemplates.com",
         "url": "http://github.com/ariatemplates"
     },
     "bin": {
@@ -29,7 +33,6 @@
     },
     "contributors": {
         "name": "Fabio Crisci",
-        "email": "fabio@ariatemplates.com",
         "url": "https://github.com/piuccio"
     },
     "dependencies": {
@@ -57,18 +60,15 @@
     ],
     "maintainers": [
         {
-            "name": "ariatemplates",
-            "email": "admin@ariatemplates.com"
+            "name": "ariatemplates"
         },
         {
-            "name": "piuccio",
-            "email": "piuccio@gmail.com"
+            "name": "piuccio"
         }
     ],
     "name": "git-release-notes",
     "optionalDependencies": {},
     "preferGlobal": true,
-    "readme": "ERROR: No README data found!",
     "repository": {
         "type": "git",
         "url": "git+https://github.com/ariatemplates/git-release-notes.git"
@@ -79,78 +79,6 @@
     },
     "version": "1.0.0"
 }
-```
-
-
-
-# <a name="apidoc.tableOfContents"></a>[table of contents](#apidoc.tableOfContents)
-
-#### [module git-release-notes](#apidoc.module.git-release-notes)
-1.  object <span class="apidocSignatureSpan">git-release-notes.</span>git
-
-#### [module git-release-notes.git](#apidoc.module.git-release-notes.git)
-1.  [function <span class="apidocSignatureSpan">git-release-notes.git.</span>log (options, callback)](#apidoc.element.git-release-notes.git.log)
-
-
-
-# <a name="apidoc.module.git-release-notes"></a>[module git-release-notes](#apidoc.module.git-release-notes)
-
-
-
-# <a name="apidoc.module.git-release-notes.git"></a>[module git-release-notes.git](#apidoc.module.git-release-notes.git)
-
-#### <a name="apidoc.element.git-release-notes.git.log"></a>[function <span class="apidocSignatureSpan">git-release-notes.git.</span>log (options, callback)](#apidoc.element.git-release-notes.git.log)
-- description and source-code
-```javascript
-log = function (options, callback) {
-	var spawn = require("child_process").spawn;
-	var gitArgs = ["log", "--no-color", "--no-merges", "--branches=" + options.branch, "--format=" + formatOptions, options.range];
-	debug("Spawning git with args %o", gitArgs);
-	var gitLog = spawn("git", gitArgs, {
-		cwd : options.cwd,
-		stdio : ["ignore", "pipe", process.stderr]
-	});
-
-	var allCommits = "";
-	gitLog.stdout.on("data", function (data) {
-		allCommits += data;
-	});
-
-	gitLog.on("exit", function (code) {
-		debug("Git command exited with code '%d'", code);
-		if (code === 0) {
-			allCommits = normalizeNewlines(allCommits).trim();
-
-			if (allCommits) {
-				// Build the list of commits from git log
-				var commits = processCommits(allCommits, options);
-				callback(commits);
-			} else {
-				callback([]);
-			}
-		}
-	});
-}
-```
-- example usage
-```shell
-...
-	if (err) {
-		require("optimist").showHelp();
-		console.error("\nUnable to locate template file " + argv._[1]);
-		process.exit(5);
-	} else {
-		getOptions(function (options) {
-			debug("Running git log in '%s' on branch '%s' with range '%s'", options.p, options.b, argv._[0]);
-			git.log({
-				branch : options.b,
-				range : argv._[0],
-				title : new RegExp(options.t),
-				meaning : Array.isArray(options.m) ? options.m : [options.m],
-				cwd : options.p
-			}, function (commits) {
-				debug("Got %d commits", commits.length);
-...
 ```
 
 
